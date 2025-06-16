@@ -1,0 +1,1524 @@
+<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Chart Analysis</title>
+    
+    <!-- Meta tags for social sharing -->
+    <meta property="og:title" content="Trading Chart Analysis">
+    <meta property="og:description" content="Upload your trading chart image for detailed analysis and predictions.">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Trading Chart Analysis">
+    <meta name="twitter:description" content="Upload your trading chart image for detailed analysis and predictions.">
+    
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #13131f;
+            color: #f8f8f2;
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: linear-gradient(45deg, #13131f 0%, #20203a 100%);
+            animation: gradientBG 15s ease infinite;
+            background-size: 400% 400%;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: rgba(40, 42, 54, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.8s ease-in-out;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(98, 114, 164, 0.2);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #bd93f9;
+            font-size: 2.8rem;
+            animation: glowText 3s ease-in-out infinite alternate, slideDown 0.7s ease-out;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(189, 147, 249, 0.5);
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #bd93f9, transparent);
+            animation: expandWidth 2s ease-in-out infinite;
+        }
+        
+        @keyframes expandWidth {
+            0%, 100% { width: 100px; }
+            50% { width: 200px; }
+        }
+        
+        @keyframes glowText {
+            0% { text-shadow: 0 0 10px rgba(189, 147, 249, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(189, 147, 249, 0.8); }
+        }
+        
+        h2 {
+            color: #8be9fd;
+            margin: 20px 0 15px;
+            font-size: 1.8rem;
+            position: relative;
+            display: inline-block;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, #8be9fd, transparent);
+            animation: slideRight 2s ease-in-out;
+        }
+        
+        @keyframes slideRight {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        /* Upload form styles */
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            border: 2px dashed #6272a4;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            transition: all 0.5s ease;
+            background-color: rgba(40, 42, 54, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(98, 114, 164, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 6s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .upload-section:hover {
+            border-color: #ff79c6;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .upload-section.drag-over {
+            background-color: rgba(255, 121, 198, 0.1);
+            border-color: #ff79c6;
+            transform: scale(1.02) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            margin: 25px 0;
+        }
+        
+        .file-input {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #50fa7b, #69ff9a);
+            color: #282a36;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(80, 250, 123, 0.3);
+        }
+        
+        .file-input-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .file-input-label:hover::before {
+            left: 100%;
+        }
+        
+        .file-input-label:hover {
+            background: linear-gradient(45deg, #69ff9a, #50fa7b);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(80, 250, 123, 0.4);
+        }
+        
+        .file-input-label:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(80, 250, 123, 0.3);
+        }
+        
+        .server-url-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #383a59;
+            border: 1px solid #6272a4;
+            border-radius: 5px;
+            color: #f8f8f2;
+            transition: all 0.3s ease;
+            display: none; /* Hide the input since we're using a fixed URL */
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .analyze-btn {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #ff79c6, #ff92d0);
+            color: #282a36;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(255, 121, 198, 0.3);
+        }
+        
+        .analyze-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .analyze-btn:hover::before {
+            left: 100%;
+        }
+        
+        .analyze-btn:hover {
+            background: linear-gradient(45deg, #ff92d0, #ff79c6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 121, 198, 0.4);
+        }
+        
+        .analyze-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(255, 121, 198, 0.3);
+        }
+        
+        .analyze-btn:disabled {
+            background: linear-gradient(45deg, #6272a4, #8091c9);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+        
+        .check-status-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #8be9fd, #9df0ff);
+            color: #282a36;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(139, 233, 253, 0.3);
+        }
+        
+        .check-status-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .check-status-btn:hover::before {
+            left: 100%;
+        }
+        
+        .check-status-btn:hover {
+            background: linear-gradient(45deg, #9df0ff, #8be9fd);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139, 233, 253, 0.4);
+        }
+        
+        .check-status-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(139, 233, 253, 0.3);
+        }
+        
+        .selected-file {
+            margin-top: 15px;
+            font-style: italic;
+            color: #6272a4;
+            background-color: rgba(98, 114, 164, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+            transition: all 0.3s ease;
+        }
+        
+        .error-message {
+            background-color: rgba(255, 85, 85, 0.2);
+            color: #ff5555;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #ff5555;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 5px 15px rgba(255, 85, 85, 0.2);
+            transform: translateX(0);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            display: none;
+            position: relative;
+        }
+        
+        .spinner:before, .spinner:after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        .spinner:before {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 121, 198, 0.6);
+            animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        .spinner:after {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            background-color: rgba(255, 121, 198, 0.3);
+            animation: pulse-dot 1.8s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.3); opacity: 0.8; }
+            80%, 100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes pulse-dot {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1); }
+            100% { transform: scale(0.8); }
+        }
+        
+        .server-status {
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            display: none;
+            transition: all 0.5s ease;
+            animation: fadeInUp 0.5s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+        
+        .status-checking {
+            background-color: rgba(98, 114, 164, 0.2);
+            color: #6272a4;
+            display: block;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        
+        .status-online {
+            background-color: rgba(80, 250, 123, 0.2);
+            color: #50fa7b;
+            display: block;
+            animation: fadeInScale 0.5s ease-in-out;
+        }
+        
+        .status-offline {
+            background-color: rgba(255, 85, 85, 0.2);
+            color: #ff5555;
+            display: block;
+            animation: fadeInScale 0.5s ease-in-out;
+        }
+        
+        /* Results section styles */
+        .results-section {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            animation: fadeInUp 0.8s ease-in-out;
+        }
+        
+        .info-table th {
+            background-color: #6272a4;
+            color: #f8f8f2;
+            text-align: left;
+            font-weight: bold;
+            padding: 12px 15px;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+        
+        .info-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #44475a;
+            color: #f8f8f2;
+        }
+        
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .info-table tr:nth-child(even) {
+            background-color: rgba(68, 71, 90, 0.3);
+        }
+        
+        .info-table tr {
+            transition: all 0.3s ease;
+        }
+        
+        .info-table tr:hover {
+            background-color: rgba(98, 114, 164, 0.2);
+            transform: translateX(5px);
+        }
+        
+        /* Levels container */
+        .levels-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+            animation: fadeInUp 1s ease-in-out;
+        }
+        
+        .level-table {
+            flex: 1;
+            min-width: 250px;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            background-color: rgba(40, 42, 54, 0.5);
+            animation: fadeInScale 0.8s ease-in-out;
+        }
+        
+        .level-table caption {
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 15px 10px;
+            background-color: rgba(98, 114, 164, 0.2);
+            color: #8be9fd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .level-table th {
+            background-color: rgba(98, 114, 164, 0.3);
+            color: #f8f8f2;
+            text-align: left;
+            padding: 12px 15px;
+        }
+        
+        .level-table tr {
+            transition: all 0.3s ease;
+        }
+        
+        .level-table tr:hover {
+            background-color: rgba(98, 114, 164, 0.1);
+        }
+        
+        .level-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(68, 71, 90, 0.5);
+        }
+        
+        .level-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .support-value {
+            color: #50fa7b;
+            font-weight: bold;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .support-value::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #50fa7b;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .support-value:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        
+        .resistance-value {
+            color: #ff5555;
+            font-weight: bold;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .resistance-value::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #ff5555;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .resistance-value:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        
+        /* Panels container */
+        .panels-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+            animation: fadeInUp 1.2s ease-in-out;
+        }
+        
+        .panel {
+            flex: 1;
+            min-width: 250px;
+            background-color: rgba(56, 58, 89, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            animation: fadeInScale 1s ease-in-out;
+        }
+        
+        .panel:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .panel-title {
+            position: absolute;
+            top: 8px;
+            left: 20px;
+            background-color: inherit;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 20px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .panel-content {
+            margin-top: 19px;
+            line-height: 1.8;
+        }
+        
+        .panel-up {
+            border: 1px solid #50fa7b;
+            background: linear-gradient(135deg, rgba(40, 42, 54, 0.8), rgba(80, 250, 123, 0.1));
+        }
+        
+        .panel-up .panel-title {
+            color: #50fa7b;
+            background: linear-gradient(135deg, rgba(40, 42, 54, 0.9), rgba(80, 250, 123, 0.2));
+            border: 1px solid #50fa7b;
+        }
+        
+        .panel-down {
+            border: 1px solid #ff5555;
+            background: linear-gradient(135deg, rgba(40, 42, 54, 0.8), rgba(255, 85, 85, 0.1));
+        }
+        
+        .panel-down .panel-title {
+            color: #ff5555;
+            background: linear-gradient(135deg, rgba(40, 42, 54, 0.9), rgba(255, 85, 85, 0.2));
+            border: 1px solid #ff5555;
+        }
+        
+        .panel-neutral {
+            border: 1px solid #f1fa8c;
+            background: linear-gradient(135deg, rgba(40, 42, 54, 0.8), rgba(241, 250, 140, 0.1));
+        }
+        
+        .panel-neutral .panel-title {
+            color: #f1fa8c;
+            background: linear-gradient(135deg, rgba(40, 42, 54, 0.9), rgba(241, 250, 140, 0.2));
+            border: 1px solid #f1fa8c;
+        }
+        
+        /* Progress bar for signal strength */
+        .progress-container {
+            width: 100%;
+            background-color: rgba(68, 71, 90, 0.3);
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+            top: 12px;
+            height: 25px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress-bar {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #ff79c6, #bd93f9);
+            border-radius: 10px;
+            transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            width: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 2s linear infinite;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #f8f8f2;
+            font-weight: bold;
+            z-index: 1;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Visualization */
+        .visualization {
+            margin: 30px 0;
+            text-align: center;
+            animation: fadeInUp 1.4s ease-in-out;
+        }
+        
+        .visualization img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+            animation: fadeInScale 1.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .visualization img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Image loading indicator */
+        .image-loading-indicator {
+            padding: 30px;
+            background-color: rgba(40, 42, 54, 0.3);
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(98, 114, 164, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #ff79c6;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            color: #bd93f9;
+            font-size: 18px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInScale {
+            from { 
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(98, 114, 164, 0.5); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(98, 114, 164, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(98, 114, 164, 0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .upload-section {
+                padding: 30px 15px;
+            }
+            
+            .levels-container, .panels-container {
+                flex-direction: column;
+            }
+            
+            .level-table, .panel {
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .analyze-btn, .check-status-btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadSection = document.getElementById('uploadSection');
+            const fileInput = document.getElementById('imageFile');
+            const fileNameDisplay = document.getElementById('fileName');
+            const serverInput = document.getElementById('serverUrl');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const statusBtn = document.getElementById('checkStatusBtn');
+            const statusDiv = document.getElementById('serverStatus');
+            const spinner = document.getElementById('spinner');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            // Set fixed server URL
+            const SERVER_URL = 'https://alltradingapi.com/pixer/';
+            
+            // Show file name when selected
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    fileNameDisplay.textContent = file.name;
+                    fileNameDisplay.style.display = 'block';
+                    analyzeBtn.disabled = false;
+                    
+                    // Show image preview if it's an image
+                    if (file.type.match('image.*')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const imgPreview = document.getElementById('imagePreview');
+                            imgPreview.src = e.target.result;
+                            imgPreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                } else {
+                    fileNameDisplay.style.display = 'none';
+                    analyzeBtn.disabled = true;
+                    document.getElementById('imagePreview').style.display = 'none';
+                }
+            });
+            
+            // Drag and drop functionality
+            uploadSection.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+            
+            uploadSection.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+            
+            uploadSection.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    fileInput.files = e.dataTransfer.files;
+                    // Trigger change event
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+            
+            // Server status check with animated status
+            statusBtn.addEventListener('click', async function() {
+                spinner.style.display = 'block';
+                statusDiv.className = 'server-status status-checking';
+                statusDiv.innerHTML = '<span class="pulse-dot"></span> Checking server status...';
+                statusDiv.style.display = 'block';
+                
+                try {
+                    const response = await fetch(`${SERVER_URL}/check_health.php`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'ok') {
+                        statusDiv.className = 'server-status status-online';
+                        statusDiv.innerHTML = '<span class="status-icon">✓</span> Server is online!';
+                    } else {
+                        statusDiv.className = 'server-status status-offline';
+                        statusDiv.innerHTML = '<span class="status-icon">✗</span> Server is responding but reporting issues.';
+                    }
+                } catch (error) {
+                    statusDiv.className = 'server-status status-offline';
+                    statusDiv.innerHTML = '<span class="status-icon">✗</span> Cannot connect to server: ' + error.message;
+                } finally {
+                    spinner.style.display = 'none';
+                }
+            });
+            
+            // Analyze chart with loading animation
+            analyzeBtn.addEventListener('click', async function() {
+                if (!fileInput.files.length) {
+                    showError('Please select an image file');
+                    return;
+                }
+                
+                // Show loading state
+                spinner.style.display = 'block';
+                errorDiv.style.display = 'none';
+                
+                // Change button text and appearance
+                analyzeBtn.innerHTML = '<span class="loading-text">Analyzing...</span>';
+                analyzeBtn.disabled = true;
+                
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                
+                try {
+                    // First check server health
+                    const healthResponse = await fetch(`${SERVER_URL}/check_health.php`);
+                    const healthData = await healthResponse.json();
+                    
+                    if (healthData.status === 'ok') {
+                        // Server is healthy, proceed with upload
+                        const uploadResponse = await fetch(`${SERVER_URL}/upload.php`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const uploadResult = await uploadResponse.json();
+                        
+                        if (uploadResult.error) {
+                            showError(uploadResult.error || 'Error analyzing chart');
+                        } else {
+                            // Display the results
+                            displayResults(uploadResult, SERVER_URL);
+                            
+                            // Scroll to results with smooth animation
+                            const resultsSection = document.getElementById('resultsSection');
+                            if (resultsSection) {
+                                setTimeout(() => {
+                                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }, 500);
+                            }
+                        }
+                    } else {
+                        showError('Server is not ready. Please try again later.');
+                    }
+                } catch (error) {
+                    showError('Error: ' + error.message);
+                } finally {
+                    // Restore button state
+                    spinner.style.display = 'none';
+                    analyzeBtn.innerHTML = 'Analyze Chart';
+                    analyzeBtn.disabled = false;
+                }
+            });
+            
+            function showError(message) {
+                errorDiv.innerHTML = `<span class="error-icon">!</span> ${message}`;
+                errorDiv.style.display = 'block';
+                
+                // Shake animation is applied via CSS
+                
+                // Auto-hide after a delay
+                setTimeout(() => {
+                    errorDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        errorDiv.style.display = 'none';
+                        errorDiv.style.opacity = '1';
+                    }, 500);
+                }, 5000);
+            }
+            
+            function displayResults(results, serverUrl) {
+                // Create or select the results section
+                let resultsSection = document.getElementById('resultsSection');
+                if (!resultsSection) {
+                    resultsSection = document.createElement('div');
+                    resultsSection.id = 'resultsSection';
+                    resultsSection.className = 'results-section';
+                    document.querySelector('.container').appendChild(resultsSection);
+                }
+                
+                // Clear previous content
+                resultsSection.innerHTML = '';
+                
+                // Create heading
+                const heading = document.createElement('h2');
+                heading.textContent = 'Chart Analysis Results';
+                resultsSection.appendChild(heading);
+                
+                // Create chart info table
+                const infoTable = document.createElement('table');
+                infoTable.className = 'info-table';
+                infoTable.innerHTML = `
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Chart Type</td>
+                        <td>${results.chart_type || 'N/A'}</td>
+                    </tr>
+                    <!-- 
+                    <tr>
+                        <td>Chart Name</td>
+                        <td>${results.chart_name || 'N/A'}</td>
+                    </tr>
+                    -->
+                    <tr>
+                        <td>Price Range</td>
+                        <td>${results.price_range ? `${results.price_range.min} - ${results.price_range.max}` : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Candlesticks Detected</td>
+                        <td>${results.candlesticks_detected || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Market Trend</td>
+                        <td>${results.trend || 'N/A'} (Strength: ${results.trend_strength ? results.trend_strength.toFixed(2) + '%' : 'N/A'})</td>
+                    </tr>
+                    <tr>
+                        <td>Analysis Time</td>
+                        <td>${results.analysis_time || 'N/A'}</td>
+                    </tr>
+                `;
+                resultsSection.appendChild(infoTable);
+                
+                // Create levels container
+                const levelsContainer = document.createElement('div');
+                levelsContainer.className = 'levels-container';
+                
+                // Create support levels table
+                const supportTable = document.createElement('table');
+                supportTable.className = 'level-table';
+                supportTable.innerHTML = `<caption>Support Levels</caption>
+                    <tr>
+                        <th>Level</th>
+                        <th>Price</th>
+                    </tr>
+                `;
+                
+                if (results.support_levels && results.support_levels.length > 0) {
+                    results.support_levels.forEach((level, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td class="support-value">${parseFloat(level).toFixed(5)}</td>
+                        `;
+                        supportTable.appendChild(row);
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="2">No support levels detected</td>';
+                    supportTable.appendChild(row);
+                }
+                
+                levelsContainer.appendChild(supportTable);
+                
+                // Create resistance levels table
+                const resistanceTable = document.createElement('table');
+                resistanceTable.className = 'level-table';
+                resistanceTable.innerHTML = `<caption>Resistance Levels</caption>
+                    <tr>
+                        <th>Level</th>
+                        <th>Price</th>
+                    </tr>
+                `;
+                
+                if (results.resistance_levels && results.resistance_levels.length > 0) {
+                    results.resistance_levels.forEach((level, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td class="resistance-value">${parseFloat(level).toFixed(5)}</td>
+                        `;
+                        resistanceTable.appendChild(row);
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="2">No resistance levels detected</td>';
+                    resistanceTable.appendChild(row);
+                }
+                
+                levelsContainer.appendChild(resistanceTable);
+                resultsSection.appendChild(levelsContainer);
+                
+                // Create panels container
+                const panelsContainer = document.createElement('div');
+                panelsContainer.className = 'panels-container';
+                
+                // Create prediction panel
+                if (results.next_candle_prediction) {
+                    const prediction = results.next_candle_prediction;
+                    const predictionPanel = document.createElement('div');
+                    predictionPanel.className = `panel ${prediction.direction === 'Up' ? 'panel-up' : 'panel-down'}`;
+                    predictionPanel.innerHTML = `
+                        <div class="panel-title">Next Candle Prediction</div>
+                        <div class="panel-content">
+                            <p><strong>Direction:</strong> <span class="direction-${prediction.direction.toLowerCase()}">${prediction.direction}</span></p>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${parseFloat(prediction.confidence).toFixed(2)}%"></div>
+                                <div class="progress-text">${parseFloat(prediction.confidence).toFixed(2)}% Confidence</div>
+                            </div>
+                            <p><strong>Estimated Price:</strong> ${parseFloat(prediction.estimated_price).toFixed(5)}</p>
+                        </div>
+                    `;
+                    panelsContainer.appendChild(predictionPanel);
+                    
+                    // Animate the progress bar
+                    setTimeout(() => {
+                        const progressBar = predictionPanel.querySelector('.progress-bar');
+                        if (progressBar) {
+                            progressBar.style.width = `${parseFloat(prediction.confidence).toFixed(2)}%`;
+                        }
+                    }, 100);
+                }
+                
+                // Create signal strength panel
+                if (results.signal_strength !== undefined) {
+                    const signalPanel = document.createElement('div');
+                    signalPanel.className = 'panel panel-neutral';
+                    
+                    // Determine signal strength level for better visual indication
+                    let strengthLevel = 'neutral';
+                    if (results.signal_strength >= 75) {
+                        strengthLevel = 'strong';
+                    } else if (results.signal_strength >= 50) {
+                        strengthLevel = 'moderate';
+                    } else if (results.signal_strength >= 25) {
+                        strengthLevel = 'weak';
+                    } else {
+                        strengthLevel = 'very-weak';
+                    }
+                    
+                    signalPanel.innerHTML = `
+                        <div class="panel-title">Trading Signal Strength</div>
+                        <div class="panel-content">
+                            <div class="progress-container">
+                                <div class="progress-bar strength-${strengthLevel}" style="width: 0%"></div>
+                                <div class="progress-text">${parseFloat(results.signal_strength).toFixed(2)}%</div>
+                            </div>
+                            <p class="signal-text strength-${strengthLevel}">
+                                ${strengthLevel.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Signal
+                            </p>
+                        </div>
+                    `;
+                    panelsContainer.appendChild(signalPanel);
+                    
+                    // Animate the progress bar
+                    setTimeout(() => {
+                        const progressBar = signalPanel.querySelector('.progress-bar');
+                        if (progressBar) {
+                            progressBar.style.width = `${parseFloat(results.signal_strength).toFixed(2)}%`;
+                        }
+                    }, 300);
+                }
+                
+                resultsSection.appendChild(panelsContainer);
+                
+                // Create visualization section if available
+                if (results.visualization_url) {
+                    const visualization = document.createElement('div');
+                    visualization.className = 'visualization';
+                    
+                    const visTitle = document.createElement('h2');
+                    visTitle.textContent = 'Chart Visualization';
+                    visualization.appendChild(visTitle);
+                    
+                    const visImg = document.createElement('img');
+                    // Add a loading class/state
+                    const loadingIndicator = document.createElement('div');
+                    loadingIndicator.className = 'image-loading-indicator';
+                    loadingIndicator.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading visualization...</div>';
+                    visualization.appendChild(loadingIndicator);
+                    
+                    // Format the visualization URL properly
+                    let visUrl = results.visualization_url;
+                    if (visUrl.startsWith('/')) {
+                        visUrl = visUrl.substring(1);
+                    }
+                    // Use our visualize.php proxy instead of direct URL
+                    visImg.src = `visualize.php?path=${encodeURIComponent(visUrl)}`;
+                    visImg.alt = 'Chart Visualization';
+                    
+                    // Show the image and hide loading indicator when loaded
+                    visImg.onload = function() {
+                        loadingIndicator.style.display = 'none';
+                        visImg.style.display = 'block';
+                    };
+                    
+                    visImg.onerror = function() {
+                        loadingIndicator.innerHTML = '<div class="error-message">Failed to load visualization.<br>Try refreshing the page.</div>';
+                    };
+                    
+                    // Hide the image initially until loaded
+                    visImg.style.display = 'none';
+                    
+                    // Add lightbox functionality
+                    visImg.addEventListener('click', function() {
+                        // Use the same visualize.php endpoint for the lightbox
+                        const fullImageUrl = `visualize.php?path=${encodeURIComponent(visUrl)}`;
+                        openLightbox(fullImageUrl);
+                    });
+                    
+                    visualization.appendChild(visImg);
+                    resultsSection.appendChild(visualization);
+                }
+                
+                // Show the results section with fade-in animation
+                resultsSection.style.opacity = '0';
+                resultsSection.style.display = 'block';
+                setTimeout(() => {
+                    resultsSection.style.opacity = '1';
+                }, 50);
+            }
+            
+            // Add a lightbox function for viewing visualizations
+            function openLightbox(imgSrc) {
+                const lightbox = document.createElement('div');
+                lightbox.className = 'lightbox';
+                lightbox.innerHTML = `
+                    <div class="lightbox-content">
+                        <span class="close-lightbox">&times;</span>
+                        <img src="${imgSrc}" alt="Enlarged chart visualization">
+                    </div>
+                `;
+                document.body.appendChild(lightbox);
+                
+                // Add animation class after a short delay
+                setTimeout(() => {
+                    lightbox.classList.add('active');
+                }, 10);
+                
+                // Close lightbox when clicking the X or outside the image
+                lightbox.querySelector('.close-lightbox').addEventListener('click', function() {
+                    closeLightbox(lightbox);
+                });
+                
+                lightbox.addEventListener('click', function(e) {
+                    if (e.target === lightbox) {
+                        closeLightbox(lightbox);
+                    }
+                });
+                
+                // Close on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeLightbox(lightbox);
+                    }
+                });
+            }
+            
+            function closeLightbox(lightbox) {
+                lightbox.classList.remove('active');
+                setTimeout(() => {
+                    document.body.removeChild(lightbox);
+                }, 300);
+            }
+            
+            // Check server status on page load
+            setTimeout(() => {
+                statusBtn.click();
+            }, 1000);
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Pixer Bot</h1>
+        
+        <div id="uploadSection" class="upload-section">
+            <h2>Created By @forid0k</h2>
+            
+            <div class="file-input-wrapper">
+                <input type="file" id="imageFile" class="file-input" accept="image/*" required="">
+                <label for="imageFile" class="file-input-label">Choose Image</label>
+            </div>
+            
+            <p style="margin: 15px 0; text-align: center;">Drag and drop your chart image or click to select a file</p>
+            <p id="fileName" class="selected-file" style="display: none;">No file selected</p>
+            
+            <!-- Image Preview -->
+            <img id="imagePreview" src="" alt="Image preview" style="max-width: 300px; max-height: 200px; margin: 15px auto; display: none; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); object-fit: contain;">
+            
+            <div style="width: 100%; max-width: 500px; margin-top: 20px;">
+                <input type="text" id="serverUrl" class="server-url-input" placeholder="https://alltradingapi.com/pixer/" value="https://alltradingapi.com/pixer/">
+                <div class="button-container">
+                    <button id="analyzeBtn" class="analyze-btn" disabled="">Analyze Chart</button>
+                    <button id="checkStatusBtn" class="check-status-btn">Check Server Status</button>
+                </div>
+            </div>
+            
+            <div id="spinner" class="spinner" style="display: none;"></div>
+            <div id="serverStatus" class="server-status status-offline" style="display: block;"><span class="status-icon">✗</span> Server is responding but reporting issues.</div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <!-- Additional CSS for lightbox and other interactive elements -->
+    <style>
+        /* Status icon styles */
+        .status-icon, .error-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .status-online .status-icon {
+            background-color: rgba(80, 250, 123, 0.8);
+            color: #282a36;
+        }
+        
+        .status-offline .status-icon {
+            background-color: rgba(255, 85, 85, 0.8);
+            color: #282a36;
+        }
+        
+        .error-icon {
+            background-color: #ff5555;
+            color: #f8f8f2;
+        }
+        
+        /* Pulsing dot for "checking" state */
+        .pulse-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #6272a4;
+            margin-right: 8px;
+            animation: pulse-dot 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        
+        /* Direction styles */
+        .direction-up {
+            color: #50fa7b;
+            font-weight: bold;
+            animation: pulse-text 2s infinite;
+        }
+        
+        .direction-down {
+            color: #ff5555;
+            font-weight: bold;
+            animation: pulse-text 2s infinite;
+        }
+        
+        @keyframes pulse-text {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* Signal strength styles */
+        .strength-strong {
+            background: linear-gradient(90deg, #50fa7b, #8be9fd);
+            color: #282a36;
+        }
+        
+        .strength-moderate {
+            background: linear-gradient(90deg, #f1fa8c, #ffb86c);
+            color: #282a36;
+        }
+        
+        .strength-weak {
+            background: linear-gradient(90deg, #ffb86c, #ff5555);
+            color: #282a36;
+        }
+        
+        .strength-very-weak {
+            background: linear-gradient(90deg, #ff5555, #bd93f9);
+            color: #f8f8f2;
+        }
+        
+        .signal-text {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            animation: pulse-text 2s infinite;
+        }
+        
+        .signal-text.strength-strong {
+            color: #50fa7b;
+        }
+        
+        .signal-text.strength-moderate {
+            color: #f1fa8c;
+        }
+        
+        .signal-text.strength-weak {
+            color: #ffb86c;
+        }
+        
+        .signal-text.strength-very-weak {
+            color: #ff5555;
+        }
+        
+        /* Button loading text animation */
+        .loading-text {
+            position: relative;
+        }
+        
+        .loading-text:after {
+            content: '...';
+            position: absolute;
+            animation: dots 1.5s steps(3, end) infinite;
+            display: inline-block;
+            width: 1.2em;
+            text-align: left;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40%, 60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
+        /* Lightbox for visualization */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(20, 20, 30, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .lightbox.active {
+            opacity: 1;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .lightbox.active .lightbox-content {
+            transform: scale(1);
+        }
+        
+        .lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            object-fit: contain;
+        }
+        
+        .close-lightbox {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            font-size: 30px;
+            color: #f8f8f2;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background-color: rgba(40, 42, 54, 0.7);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-lightbox:hover {
+            background-color: #ff5555;
+            transform: rotate(90deg);
+        }
+    </style>
+
+</body></html>
