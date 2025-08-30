@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wingo Bot - Signal Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7),
+                         0 0 20px rgba(0, 255, 255, 0.5),
+                         0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .signal-small {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+        
+        .signal-big {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .countdown-animation {
+            animation: countdownPulse 1s infinite;
+        }
+        
+        @keyframes countdownPulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="container max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="orbitron text-4xl md:text-5xl font-bold text-white mb-2 glow-text">
+                <i class="fas fa-robot mr-3"></i>WINGO BOT
+            </h1>
+            <p class="text-blue-200 text-lg">Advanced Signal Generator for Timing Strategies</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="glass-effect p-6 md:p-8 mb-8">
+            <!-- Timer Display -->
+            <div class="text-center mb-8">
+                <div class="orbitron text-6xl md:text-8xl font-bold text-cyan-400 mb-4 countdown-animation" id="timer">
+                    00:00
+                </div>
+                <div class="text-blue-200 text-lg">Next Signal In</div>
+            </div>
+
+            <!-- Signal Display -->
+            <div class="mb-8 text-center">
+                <div class="orbitron text-2xl md:text-3xl text-white mb-4">Current Signal</div>
+                <div id="signal-display" class="glass-effect p-6 orbitron text-4xl md:text-5xl font-bold text-white pulse">
+                    WAITING...
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <button id="btn-30s" class="bg-blue-600 hover:bg-blue-700 text-white orbitron text-xl py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95">
+                    <i class="fas fa-bolt mr-2"></i>30s Signal
+                </button>
+                <button id="btn-1m" class="bg-purple-600 hover:bg-purple-700 text-white orbitron text-xl py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95">
+                    <i class="fas fa-clock mr-2"></i>1m Signal
+                </button>
+            </div>
+
+            <!-- Statistics -->
+            <div class="grid grid-cols-2 gap-4 text-center">
+                <div class="glass-effect p-4">
+                    <div class="orbitron text-2xl text-green-400" id="small-count">0</div>
+                    <div class="text-blue-200">Small Signals</div>
+                </div>
+                <div class="glass-effect p-4">
+                    <div class="orbitron text-2xl text-red-400" id="big-count">0</div>
+                    <div class="text-blue-200">Big Signals</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="glass-effect p-6 text-center">
+            <h3 class="orbitron text-xl text-cyan-400 mb-4">How to Use</h3>
+            <div class="text-blue-200 space-y-2">
+                <p>• Click either button to start generating signals</p>
+                <p>• Signals will be generated every 30 seconds or 1 minute</p>
+                <p>• "SMALL" signals indicate conservative moves</p>
+                <p>• "BIG" signals indicate aggressive moves</p>
+                <p>• Statistics are tracked automatically</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-blue-300">
+            <p>Powered by Advanced Algorithm Technology</p>
+            <p class="text-sm mt-2">Ready for GitHub Pages Deployment</p>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        let currentTime = 0;
+        let isRunning = false;
+        let smallCount = 0;
+        let bigCount = 0;
+        let currentMode = null;
+
+        const timerDisplay = document.getElementById('timer');
+        const signalDisplay = document.getElementById('signal-display');
+        const smallCountDisplay = document.getElementById('small-count');
+        const bigCountDisplay = document.getElementById('big-count');
+        const btn30s = document.getElementById('btn-30s');
+        const btn1m = document.getElementById('btn-1m');
+
+        function startTimer(duration) {
+            if (isRunning) {
+                clearInterval(timerInterval);
+            }
+            
+            currentTime = duration;
+            isRunning = true;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                currentTime--;
+                updateTimerDisplay();
+                
+                if (currentTime <= 0) {
+                    generateSignal();
+                    currentTime = duration;
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function generateSignal() {
+            // Randomly generate small or big signal (60% small, 40% big)
+            const isSmall = Math.random() < 0.6;
+            const signalType = isSmall ? 'SMALL' : 'BIG';
+            
+            // Update counters
+            if (isSmall) {
+                smallCount++;
+                smallCountDisplay.textContent = smallCount;
+            } else {
+                bigCount++;
+                bigCountDisplay.textContent = bigCount;
+            }
+            
+            // Update display with animation
+            signalDisplay.textContent = signalType;
+            signalDisplay.className = 'glass-effect p-6 orbitron text-4xl md:text-5xl font-bold text-white pulse';
+            signalDisplay.classList.add(isSmall ? 'signal-small' : 'signal-big');
+            
+            // Add sound effect (optional browser beep)
+            beep(isSmall ? 800 : 400, 200);
+            
+            // Remove animation after 2 seconds
+            setTimeout(() => {
+                signalDisplay.classList.remove('pulse');
+            }, 2000);
+        }
+
+        function beep(frequency, duration) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function resetButtons() {
+            btn30s.classList.remove('bg-green-600');
+            btn1m.classList.remove('bg-green-600');
+            btn30s.classList.add('bg-blue-600');
+            btn1m.classList.add('bg-purple-600');
+        }
+
+        // Event Listeners
+        btn30s.addEventListener('click', () => {
+            resetButtons();
+            btn30s.classList.remove('bg-blue-600');
+            btn30s.classList.add('bg-green-600');
+            currentMode = 30;
+            startTimer(30);
+            generateSignal(); // Generate immediate signal
+        });
+
+        btn1m.addEventListener('click', () => {
+            resetButtons();
+            btn1m.classList.remove('bg-purple-600');
+            btn1m.classList.add('bg-green-600');
+            currentMode = 60;
+            startTimer(60);
+            generateSignal(); // Generate immediate signal
+        });
+
+        // Initialize with 30s mode
+        startTimer(30);
+        currentMode = 30;
+        btn30s.classList.add('bg-green-600');
+        generateSignal();
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') {
+                btn30s.click();
+            } else if (e.key === '2') {
+                btn1m.click();
+            }
+        });
+
+        // Make responsive for mobile
+        function handleResize() {
+            if (window.innerWidth < 768) {
+                document.body.classList.add('p-2');
+            } else {
+                document.body.classList.remove('p-2');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+    </script>
+</body>
+</html>
+
